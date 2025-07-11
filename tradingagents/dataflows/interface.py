@@ -706,13 +706,13 @@ def get_stock_news_openai(ticker, curr_date):
     config = get_config()
     client = OpenAI(base_url=config["backend_url"])
 
-    if config["backend_url"] == "dashscope":
+    if config["llm_provider"] == "dashscope":
         completion = client.chat.completions.create(
             model=config["quick_think_llm"],
             messages=[
                 {
                     'role': 'system', 
-                    'content': f"Can you search Social Media for {ticker} from 7 days before {curr_date} to {curr_date}? Make sure you only get the data posted during that period.",
+                    'content': f"你能搜索从{curr_date}前7天到{curr_date}期间关于{ticker}的社交媒体内容吗？请确保只获取该时间段内发布的数据。",
                 }
             ],
             extra_body={
@@ -729,7 +729,7 @@ def get_stock_news_openai(ticker, curr_date):
                     "content": [
                         {
                             "type": "input_text",
-                            "text": f"Can you search Social Media for {ticker} from 7 days before {curr_date} to {curr_date}? Make sure you only get the data posted during that period.",
+                            "text": f"你能搜索从{curr_date}前7天到{curr_date}期间关于{ticker}的社交媒体内容吗？请确保只获取该时间段内发布的数据。",
                         }
                     ],
                 }
@@ -755,13 +755,13 @@ def get_global_news_openai(curr_date):
     config = get_config()
     client = OpenAI(base_url=config["backend_url"])
 
-    if config["backend_url"] == "dashscope":
+    if config["llm_provider"] == "dashscope":
         completion = client.chat.completions.create(
             model=config["quick_think_llm"],
             messages=[
                 {
                     'role': 'system', 
-                    'content': f"Can you search global or macroeconomics news from 7 days before {curr_date} to {curr_date} that would be informative for trading purposes? Make sure you only get the data posted during that period.",
+                    'content': f"你能搜索从{curr_date}前7天到{curr_date}期间对交易有参考价值的全球或宏观经济新闻吗？请确保只获取该时间段内发布的数据。",
                 }
             ],
             extra_body={
@@ -778,7 +778,7 @@ def get_global_news_openai(curr_date):
                     "content": [
                         {
                             "type": "input_text",
-                            "text": f"Can you search global or macroeconomics news from 7 days before {curr_date} to {curr_date} that would be informative for trading purposes? Make sure you only get the data posted during that period.",
+                            "text": f"你能搜索从{curr_date}前7天到{curr_date}期间对交易有参考价值的全球或宏观经济新闻吗？请确保只获取该时间段内发布的数据。",
                         }
                     ],
                 }
@@ -804,13 +804,13 @@ def get_fundamentals_openai(ticker, curr_date):
     config = get_config()
     client = OpenAI(base_url=config["backend_url"])
 
-    if config["backend_url"] == "dashscope":
+    if config["llm_provider"] == "dashscope":
         completion = client.chat.completions.create(
             model=config["quick_think_llm"],
             messages=[
                 {
                     'role': 'system', 
-                    'content': f"Can you search Fundamental for discussions on {ticker} during of the month before {curr_date} to the month of {curr_date}. Make sure you only get the data posted during that period. List as a table, with PE/PS/Cash flow/ etc",
+                    'content': f"你能搜索从{curr_date}前一个月到{curr_date}当月期间关于{ticker}基本面分析的讨论吗？请确保只获取该时间段内发布的数据。以表格形式列出PE/PS/现金流等指标",
                 }
             ],
             extra_body={
@@ -829,7 +829,7 @@ def get_fundamentals_openai(ticker, curr_date):
                     "content": [
                         {
                             "type": "input_text",
-                            "text": f"Can you search Fundamental for discussions on {ticker} during of the month before {curr_date} to the month of {curr_date}. Make sure you only get the data posted during that period. List as a table, with PE/PS/Cash flow/ etc",
+                            "text": f"你能搜索从{curr_date}前一个月到{curr_date}当月期间关于{ticker}基本面分析的讨论吗？请确保只获取该时间段内发布的数据。以表格形式列出PE/PS/现金流等指标",
                         }
                     ],
                 }

@@ -260,7 +260,7 @@ def select_llm_provider() -> tuple[str, str]:
         ("Google", "https://generativelanguage.googleapis.com/v1"),
         ("Openrouter", "https://openrouter.ai/api/v1"),
         ("Ollama", "http://localhost:11434/v1"),
-        ("dashscope", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+        ("DashScope", "https://dashscope.aliyuncs.com/compatible-mode/v1")
     ]
     
     choice = questionary.select(

@@ -5,7 +5,9 @@ from openai import OpenAI
 
 class FinancialSituationMemory:
     def __init__(self, name, config):
-        if config["backend_url"] == "http://localhost:11434/v1":
+        if config["llm_provider"] == "dashscope":
+            self.embedding = "text-embedding-v4"
+        elif config["llm_provider"] == "ollama":
             self.embedding = "nomic-embed-text"
         else:
             self.embedding = "text-embedding-3-small"
