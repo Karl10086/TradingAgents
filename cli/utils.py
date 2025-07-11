@@ -152,6 +152,12 @@ def select_shallow_thinking_agent(provider) -> str:
         "ollama": [
             ("llama3.1 local", "llama3.1"),
             ("llama3.2 local", "llama3.2"),
+        ],
+        "dashscope": [
+            ("通义千问-Turbo", "qwen-turbo"),
+            ("通义千问-Plus", "qwen-plus"),
+            ("DeepSeek-V3", "deepseek-v3"),
+            ("DeepSeek-R1", "deepseek-r1"),
         ]
     }
 
@@ -214,6 +220,12 @@ def select_deep_thinking_agent(provider) -> str:
         "ollama": [
             ("llama3.1 local", "llama3.1"),
             ("qwen3", "qwen3"),
+        ],
+        "dashscope": [
+            ("通义千问-Turbo", "qwen-turbo"),
+            ("通义千问-Plus", "qwen-plus"),
+            ("DeepSeek-V3", "deepseek-v3"),
+            ("DeepSeek-R1", "deepseek-r1"),
         ]
     }
     
@@ -247,7 +259,8 @@ def select_llm_provider() -> tuple[str, str]:
         ("Anthropic", "https://api.anthropic.com/"),
         ("Google", "https://generativelanguage.googleapis.com/v1"),
         ("Openrouter", "https://openrouter.ai/api/v1"),
-        ("Ollama", "http://localhost:11434/v1"),        
+        ("Ollama", "http://localhost:11434/v1"),
+        ("dashscope", "https://dashscope.aliyuncs.com/compatible-mode/v1")
     ]
     
     choice = questionary.select(
