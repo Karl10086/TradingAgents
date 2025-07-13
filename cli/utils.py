@@ -156,6 +156,7 @@ def select_shallow_thinking_agent(provider) -> str:
         "dashscope": [
             ("通义千问-Turbo", "qwen-turbo"),
             ("通义千问-Plus", "qwen-plus"),
+            ("通义千问-Max", "qwen-max"),
             ("DeepSeek-V3", "deepseek-v3"),
             ("DeepSeek-R1", "deepseek-r1"),
         ]
@@ -224,6 +225,7 @@ def select_deep_thinking_agent(provider) -> str:
         "dashscope": [
             ("通义千问-Turbo", "qwen-turbo"),
             ("通义千问-Plus", "qwen-plus"),
+            ("通义千问-Max", "qwen-max"),
             ("DeepSeek-V3", "deepseek-v3"),
             ("DeepSeek-R1", "deepseek-r1"),
         ]

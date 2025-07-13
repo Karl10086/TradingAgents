@@ -714,10 +714,7 @@ def get_stock_news_openai(ticker, curr_date):
                     'role': 'system', 
                     'content': f"你能搜索从{curr_date}前7天到{curr_date}期间关于{ticker}的社交媒体内容吗？请确保只获取该时间段内发布的数据。",
                 }
-            ],
-            extra_body={
-                "enable_search": True
-            }
+            ]
         )
         return completion.choices[0].message.content
     else:    
@@ -763,10 +760,7 @@ def get_global_news_openai(curr_date):
                     'role': 'system', 
                     'content': f"你能搜索从{curr_date}前7天到{curr_date}期间对交易有参考价值的全球或宏观经济新闻吗？请确保只获取该时间段内发布的数据。",
                 }
-            ],
-            extra_body={
-                "enable_search": True
-            }
+            ]
         )
         return completion.choices[0].message.content
     else:    
@@ -812,13 +806,8 @@ def get_fundamentals_openai(ticker, curr_date):
                     'role': 'system', 
                     'content': f"你能搜索从{curr_date}前一个月到{curr_date}当月期间关于{ticker}基本面分析的讨论吗？请确保只获取该时间段内发布的数据。以表格形式列出PE/PS/现金流等指标",
                 }
-            ],
-            extra_body={
-                "enable_search": True
-            }
+            ]
         )
-        print(completion)
-        exit()
         return completion.choices[0].message.content
     else:
         response = client.responses.create(
