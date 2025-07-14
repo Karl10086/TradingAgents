@@ -415,6 +415,23 @@ class Toolkit:
         openai_news_results = interface.get_global_news_openai(curr_date)
 
         return openai_news_results
+    
+    @staticmethod
+    @tool
+    def get_global_news(
+        curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+    ):
+        """
+        Retrieve the latest macroeconomics news on a given date using API.
+        Args:
+            curr_date (str): Current date in yyyy-mm-dd format
+        Returns:
+            str: A formatted string containing the latest macroeconomic news on the given date.
+        """
+
+        news_results = interface.get_global_news(curr_date)
+
+        return news_results
 
     @staticmethod
     @tool

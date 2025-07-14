@@ -706,7 +706,7 @@ def get_YFin_data(
 def get_stock_news_openai(ticker, curr_date):
     config = get_config()
     client = OpenAI(base_url=config["backend_url"])
-  
+
     response = client.responses.create(
         model=config["quick_think_llm"],
         input=[
@@ -715,7 +715,7 @@ def get_stock_news_openai(ticker, curr_date):
                 "content": [
                     {
                         "type": "input_text",
-                        "text": f"你能搜索从{curr_date}前7天到{curr_date}期间关于{ticker}的社交媒体内容吗？请确保只获取该时间段内发布的数据。",
+                        "text": f"Can you search Social Media for {ticker} from 7 days before {curr_date} to {curr_date}? Make sure you only get the data posted during that period.",
                     }
                 ],
             }
@@ -734,16 +734,12 @@ def get_stock_news_openai(ticker, curr_date):
         top_p=1,
         store=True,
     )
+
     return response.output[1].content[0].text
 
 
 def get_stock_news(ticker, curr_date):
-    lic = 'ZGZgrvgm8TkwLJecxjgho-019MRIJaOIcE6FaIBM4y7mzMx9XXqkh_fs4gRida8kgHnnfGkmoJ4bgyBNxFD4O9QCLqYtgjNQLA8iP0ytwYkgcs765TcZTDAs-pRclVpZeXTAbsyfmehI2a5-SROZgAmJOkhgysA-NMqaznMj1HY=US_ajXXf4hdOQ5ve32AdVaMqJwIGMX2mCIUbOyMs2VAGfsxftkF3vPNaJ_imjZchCZDAHq69HawaHpJJFDnIk9iHatIJxfeDlO8GTv-UpxuD49MlOFfcgZDBrnKZOrMNZby146HZ3ebrm5QkoOfZEpW6iCNYTb-YDY1tbbqJ5uE='
-    os.environ['RQDATAC2_CONF'] = f'tcp://license:{lic}@rqdatad-pro.ricequant.com:16011'
-    os.environ['RQSDK_LICENSE'] = f'tcp://license:{lic}@rqdatad-pro.ricequant.com:16011'
-    rqdatac.init()
-    response = rqdatac.news.get_stock_news(ticker, end_date=curr_date)
-    return response.to_markdown()
+    pass
 
 
 def get_global_news_openai(curr_date):
@@ -758,7 +754,7 @@ def get_global_news_openai(curr_date):
                 "content": [
                     {
                         "type": "input_text",
-                        "text": f"你能搜索从{curr_date}前7天到{curr_date}期间对交易有参考价值的全球或宏观经济新闻吗？请确保只获取该时间段内发布的数据。",
+                        "text": f"Can you search global or macroeconomics news from 7 days before {curr_date} to {curr_date} that would be informative for trading purposes? Make sure you only get the data posted during that period.",
                     }
                 ],
             }
@@ -777,7 +773,12 @@ def get_global_news_openai(curr_date):
         top_p=1,
         store=True,
     )
+
     return response.output[1].content[0].text
+
+
+def get_global_news(curr_date):
+    pass
 
 
 def get_fundamentals_openai(ticker, curr_date):
@@ -792,7 +793,7 @@ def get_fundamentals_openai(ticker, curr_date):
                 "content": [
                     {
                         "type": "input_text",
-                        "text": f"你能搜索从{curr_date}前一个月到{curr_date}当月期间关于{ticker}基本面分析的讨论吗？请确保只获取该时间段内发布的数据。以表格形式列出PE/PS/现金流等指标",
+                        "text": f"Can you search Fundamental for discussions on {ticker} during of the month before {curr_date} to the month of {curr_date}. Make sure you only get the data posted during that period. List as a table, with PE/PS/Cash flow/ etc",
                     }
                 ],
             }
@@ -811,13 +812,9 @@ def get_fundamentals_openai(ticker, curr_date):
         top_p=1,
         store=True,
     )
+
     return response.output[1].content[0].text
 
 
 def get_stock_fundamentals(ticker, curr_date):
-    lic = 'ZGZgrvgm8TkwLJecxjgho-019MRIJaOIcE6FaIBM4y7mzMx9XXqkh_fs4gRida8kgHnnfGkmoJ4bgyBNxFD4O9QCLqYtgjNQLA8iP0ytwYkgcs765TcZTDAs-pRclVpZeXTAbsyfmehI2a5-SROZgAmJOkhgysA-NMqaznMj1HY=US_ajXXf4hdOQ5ve32AdVaMqJwIGMX2mCIUbOyMs2VAGfsxftkF3vPNaJ_imjZchCZDAHq69HawaHpJJFDnIk9iHatIJxfeDlO8GTv-UpxuD49MlOFfcgZDBrnKZOrMNZby146HZ3ebrm5QkoOfZEpW6iCNYTb-YDY1tbbqJ5uE='
-    os.environ['RQDATAC2_CONF'] = f'tcp://license:{lic}@rqdatad-pro.ricequant.com:16011'
-    os.environ['RQSDK_LICENSE'] = f'tcp://license:{lic}@rqdatad-pro.ricequant.com:16011'
-    rqdatac.init()
-    response = rqdatac.current_performance(ticker, info_date=curr_date)
-    return response.to_markdown()
+    pass
