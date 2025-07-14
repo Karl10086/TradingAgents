@@ -14,6 +14,7 @@ from tqdm import tqdm
 import yfinance as yf
 from openai import OpenAI
 from .config import get_config, set_config, DATA_DIR
+import akshare as ak
 
 
 def get_finnhub_news(
@@ -738,7 +739,12 @@ def get_stock_news_openai(ticker, curr_date):
 
 
 def get_stock_news(ticker, curr_date):
-    pass
+    info = ak.stock_individual_info_em(symbol=ticker.rsplit(".", 1)[0])
+    news = ak.stock_news_em(symbol=info.at[2, 'value'])
+    result = f"## Stock news for {ticker.upper()}\n"
+    for key, value in news.items():
+        results += f"- **{key}:** {value}\n"
+    return result
 
 
 def get_global_news_openai(curr_date):
@@ -777,7 +783,11 @@ def get_global_news_openai(curr_date):
 
 
 def get_global_news(curr_date):
-    pass
+    news = ak.stock_info_global_em()
+    result = f"## Global News\n"
+    for key, value in news.items():
+        results += f"- **{key}:** {value}\n"
+    return result
 
 
 def get_fundamentals_openai(ticker, curr_date):
@@ -817,7 +827,7 @@ def get_fundamentals_openai(ticker, curr_date):
 
 def get_stock_fundamentals(ticker, curr_date):
     info = yf.Ticker(ticker.upper()).info
-    results = "## Stock Fundamentals\n"
+    results = f"## Stock fundamentals for {ticker.upper()}\n"
     for key, value in info.items():
         results += f"- **{key}:** {value}\n"
     return results
