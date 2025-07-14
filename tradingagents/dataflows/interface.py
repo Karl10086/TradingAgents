@@ -740,10 +740,14 @@ def get_stock_news_openai(ticker, curr_date):
 
 def get_stock_news(ticker, curr_date):
     info = ak.stock_individual_info_em(symbol=ticker.rsplit(".", 1)[0])
-    news = ak.stock_news_em(symbol=info.at[2, 'value'])
+    news = ak.stock_news_em(symbol=info[info['item'] == '股票简称']['value'].iloc[0])
     results = f"## Stock news for {ticker.upper()}\n"
-    for key, value in news.items():
-        results += f"- **{key}:** {value}\n"
+    for _, row in news.iterrows():
+        results += f"### {row['新闻标题']}\n"
+        results += f"- **时间:** {row['发布时间']}\n"
+        results += f"- **内容:** {row['新闻内容']}\n"
+        results += f"- **来源:** {row['文章来源']}\n"
+        results += f"- **链接:** {row['新闻链接']}\n"
     return results
 
 
@@ -785,8 +789,11 @@ def get_global_news_openai(curr_date):
 def get_global_news(curr_date):
     news = ak.stock_info_global_em()
     results = f"## Global News\n"
-    for key, value in news.items():
-        results += f"- **{key}:** {value}\n"
+    for _, row in news.iterrows():
+        results += f"### {row['标题']}\n"
+        results += f"- **时间:** {row['发布时间']}\n"
+        results += f"- **内容:** {row['摘要']}\n"
+        results += f"- **链接:** {row['链接']}\n"
     return results
 
 
