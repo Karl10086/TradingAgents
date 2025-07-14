@@ -14,6 +14,7 @@ from tqdm import tqdm
 import yfinance as yf
 from openai import OpenAI
 from .config import get_config, set_config, DATA_DIR
+import rqdatac
 
 
 def get_finnhub_news(
@@ -705,136 +706,118 @@ def get_YFin_data(
 def get_stock_news_openai(ticker, curr_date):
     config = get_config()
     client = OpenAI(base_url=config["backend_url"])
+  
+    response = client.responses.create(
+        model=config["quick_think_llm"],
+        input=[
+            {
+                "role": "system",
+                "content": [
+                    {
+                        "type": "input_text",
+                        "text": f"你能搜索从{curr_date}前7天到{curr_date}期间关于{ticker}的社交媒体内容吗？请确保只获取该时间段内发布的数据。",
+                    }
+                ],
+            }
+        ],
+        text={"format": {"type": "text"}},
+        reasoning={},
+        tools=[
+            {
+                "type": "web_search_preview",
+                "user_location": {"type": "approximate"},
+                "search_context_size": "low",
+            }
+        ],
+        temperature=1,
+        max_output_tokens=4096,
+        top_p=1,
+        store=True,
+    )
+    return response.output[1].content[0].text
 
-    if config["llm_provider"] == "dashscope":
-        completion = client.chat.completions.create(
-            model=config["quick_think_llm"],
-            messages=[
-                {
-                    'role': 'system', 
-                    'content': f"你能搜索从{curr_date}前7天到{curr_date}期间关于{ticker}的社交媒体内容吗？请确保只获取该时间段内发布的数据。",
-                }
-            ]
-        )
-        return completion.choices[0].message.content
-    else:    
-        response = client.responses.create(
-            model=config["quick_think_llm"],
-            input=[
-                {
-                    "role": "system",
-                    "content": [
-                        {
-                            "type": "input_text",
-                            "text": f"你能搜索从{curr_date}前7天到{curr_date}期间关于{ticker}的社交媒体内容吗？请确保只获取该时间段内发布的数据。",
-                        }
-                    ],
-                }
-            ],
-            text={"format": {"type": "text"}},
-            reasoning={},
-            tools=[
-                {
-                    "type": "web_search_preview",
-                    "user_location": {"type": "approximate"},
-                    "search_context_size": "low",
-                }
-            ],
-            temperature=1,
-            max_output_tokens=4096,
-            top_p=1,
-            store=True,
-        )
-        return response.output[1].content[0].text
+
+def get_stock_news(ticker, curr_date):
+    lic = 'ZGZgrvgm8TkwLJecxjgho-019MRIJaOIcE6FaIBM4y7mzMx9XXqkh_fs4gRida8kgHnnfGkmoJ4bgyBNxFD4O9QCLqYtgjNQLA8iP0ytwYkgcs765TcZTDAs-pRclVpZeXTAbsyfmehI2a5-SROZgAmJOkhgysA-NMqaznMj1HY=US_ajXXf4hdOQ5ve32AdVaMqJwIGMX2mCIUbOyMs2VAGfsxftkF3vPNaJ_imjZchCZDAHq69HawaHpJJFDnIk9iHatIJxfeDlO8GTv-UpxuD49MlOFfcgZDBrnKZOrMNZby146HZ3ebrm5QkoOfZEpW6iCNYTb-YDY1tbbqJ5uE='
+    os.environ['RQDATAC2_CONF'] = f'tcp://license:{lic}@rqdatad-pro.ricequant.com:16011'
+    os.environ['RQSDK_LICENSE'] = f'tcp://license:{lic}@rqdatad-pro.ricequant.com:16011'
+    rqdatac.init()
+    response = rqdatac.news.get_stock_news(ticker, end_date=curr_date)
+    return response.to_markdown()
 
 
 def get_global_news_openai(curr_date):
     config = get_config()
     client = OpenAI(base_url=config["backend_url"])
 
-    if config["llm_provider"] == "dashscope":
-        completion = client.chat.completions.create(
-            model=config["quick_think_llm"],
-            messages=[
-                {
-                    'role': 'system', 
-                    'content': f"你能搜索从{curr_date}前7天到{curr_date}期间对交易有参考价值的全球或宏观经济新闻吗？请确保只获取该时间段内发布的数据。",
-                }
-            ]
-        )
-        return completion.choices[0].message.content
-    else:    
-        response = client.responses.create(
-            model=config["quick_think_llm"],
-            input=[
-                {
-                    "role": "system",
-                    "content": [
-                        {
-                            "type": "input_text",
-                            "text": f"你能搜索从{curr_date}前7天到{curr_date}期间对交易有参考价值的全球或宏观经济新闻吗？请确保只获取该时间段内发布的数据。",
-                        }
-                    ],
-                }
-            ],
-            text={"format": {"type": "text"}},
-            reasoning={},
-            tools=[
-                {
-                    "type": "web_search_preview",
-                    "user_location": {"type": "approximate"},
-                    "search_context_size": "low",
-                }
-            ],
-            temperature=1,
-            max_output_tokens=4096,
-            top_p=1,
-            store=True,
-        )
-        return response.output[1].content[0].text
+    response = client.responses.create(
+        model=config["quick_think_llm"],
+        input=[
+            {
+                "role": "system",
+                "content": [
+                    {
+                        "type": "input_text",
+                        "text": f"你能搜索从{curr_date}前7天到{curr_date}期间对交易有参考价值的全球或宏观经济新闻吗？请确保只获取该时间段内发布的数据。",
+                    }
+                ],
+            }
+        ],
+        text={"format": {"type": "text"}},
+        reasoning={},
+        tools=[
+            {
+                "type": "web_search_preview",
+                "user_location": {"type": "approximate"},
+                "search_context_size": "low",
+            }
+        ],
+        temperature=1,
+        max_output_tokens=4096,
+        top_p=1,
+        store=True,
+    )
+    return response.output[1].content[0].text
 
 
 def get_fundamentals_openai(ticker, curr_date):
     config = get_config()
     client = OpenAI(base_url=config["backend_url"])
 
-    if config["llm_provider"] == "dashscope":
-        completion = client.chat.completions.create(
-            model=config["quick_think_llm"],
-            messages=[
-                {
-                    'role': 'system', 
-                    'content': f"你能搜索从{curr_date}前一个月到{curr_date}当月期间关于{ticker}基本面分析的讨论吗？请确保只获取该时间段内发布的数据。以表格形式列出PE/PS/现金流等指标",
-                }
-            ]
-        )
-        return completion.choices[0].message.content
-    else:
-        response = client.responses.create(
-            model=config["quick_think_llm"],
-            input=[
-                {
-                    "role": "system",
-                    "content": [
-                        {
-                            "type": "input_text",
-                            "text": f"你能搜索从{curr_date}前一个月到{curr_date}当月期间关于{ticker}基本面分析的讨论吗？请确保只获取该时间段内发布的数据。以表格形式列出PE/PS/现金流等指标",
-                        }
-                    ],
-                }
-            ],
-            text={"format": {"type": "text"}},
-            reasoning={},
-            tools=[
-                {
-                    "type": "web_search_preview",
-                    "user_location": {"type": "approximate"},
-                    "search_context_size": "low",
-                }
-            ],
-            temperature=1,
-            max_output_tokens=4096,
-            top_p=1,
-            store=True,
-        )
-        return response.output[1].content[0].text
+    response = client.responses.create(
+        model=config["quick_think_llm"],
+        input=[
+            {
+                "role": "system",
+                "content": [
+                    {
+                        "type": "input_text",
+                        "text": f"你能搜索从{curr_date}前一个月到{curr_date}当月期间关于{ticker}基本面分析的讨论吗？请确保只获取该时间段内发布的数据。以表格形式列出PE/PS/现金流等指标",
+                    }
+                ],
+            }
+        ],
+        text={"format": {"type": "text"}},
+        reasoning={},
+        tools=[
+            {
+                "type": "web_search_preview",
+                "user_location": {"type": "approximate"},
+                "search_context_size": "low",
+            }
+        ],
+        temperature=1,
+        max_output_tokens=4096,
+        top_p=1,
+        store=True,
+    )
+    return response.output[1].content[0].text
+
+
+def get_stock_fundamentals(ticker, curr_date):
+    lic = 'ZGZgrvgm8TkwLJecxjgho-019MRIJaOIcE6FaIBM4y7mzMx9XXqkh_fs4gRida8kgHnnfGkmoJ4bgyBNxFD4O9QCLqYtgjNQLA8iP0ytwYkgcs765TcZTDAs-pRclVpZeXTAbsyfmehI2a5-SROZgAmJOkhgysA-NMqaznMj1HY=US_ajXXf4hdOQ5ve32AdVaMqJwIGMX2mCIUbOyMs2VAGfsxftkF3vPNaJ_imjZchCZDAHq69HawaHpJJFDnIk9iHatIJxfeDlO8GTv-UpxuD49MlOFfcgZDBrnKZOrMNZby146HZ3ebrm5QkoOfZEpW6iCNYTb-YDY1tbbqJ5uE='
+    os.environ['RQDATAC2_CONF'] = f'tcp://license:{lic}@rqdatad-pro.ricequant.com:16011'
+    os.environ['RQSDK_LICENSE'] = f'tcp://license:{lic}@rqdatad-pro.ricequant.com:16011'
+    rqdatac.init()
+    response = rqdatac.current_performance(ticker, info_date=curr_date)
+    return response.to_markdown()
