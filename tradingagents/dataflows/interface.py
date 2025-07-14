@@ -14,7 +14,6 @@ from tqdm import tqdm
 import yfinance as yf
 from openai import OpenAI
 from .config import get_config, set_config, DATA_DIR
-import rqdatac
 
 
 def get_finnhub_news(
@@ -817,4 +816,8 @@ def get_fundamentals_openai(ticker, curr_date):
 
 
 def get_stock_fundamentals(ticker, curr_date):
-    pass
+    info = yf.Ticker(ticker.upper()).info
+    results = "## Stock Fundamentals\n"
+    for key, value in info.items():
+        results += f"- **{key}:** {value}\n"
+    return results
