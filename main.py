@@ -4,8 +4,8 @@ from tradingagents.default_config import DEFAULT_CONFIG
 # Create a custom config
 config = DEFAULT_CONFIG.copy()
 config["llm_provider"] = "dashscope"
-config["deep_think_llm"] = "deepseek-v3"
-config["quick_think_llm"] = "deepseek-r1"
+config["deep_think_llm"] = "qwen-turbo"
+config["quick_think_llm"] = "qwen-plus"
 config["backend_url"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
 # Initialize with custom config

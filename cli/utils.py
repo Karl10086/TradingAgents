@@ -157,8 +157,10 @@ def select_shallow_thinking_agent(provider) -> str:
             ("通义千问-Turbo", "qwen-turbo"),
             ("通义千问-Plus", "qwen-plus"),
             ("通义千问-Max", "qwen-max"),
-            ("DeepSeek-V3", "deepseek-v3"),
-            ("DeepSeek-R1", "deepseek-r1"),
+        ],
+        "deepseek": [
+            ("DeepSeek-V3", "deepseek-chat"),
+            ("DeepSeek-R1", "deepseek-reasoner"),
         ]
     }
 
@@ -226,8 +228,10 @@ def select_deep_thinking_agent(provider) -> str:
             ("通义千问-Turbo", "qwen-turbo"),
             ("通义千问-Plus", "qwen-plus"),
             ("通义千问-Max", "qwen-max"),
-            ("DeepSeek-V3", "deepseek-v3"),
-            ("DeepSeek-R1", "deepseek-r1"),
+        ],
+        "deepseek": [
+            ("DeepSeek-V3", "deepseek-chat"),
+            ("DeepSeek-R1", "deepseek-reasoner"),
         ]
     }
     
@@ -262,7 +266,8 @@ def select_llm_provider() -> tuple[str, str]:
         ("Google", "https://generativelanguage.googleapis.com/v1"),
         ("Openrouter", "https://openrouter.ai/api/v1"),
         ("Ollama", "http://localhost:11434/v1"),
-        ("DashScope", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+        ("DashScope", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
+        ("DeepSeek", "https://api.deepseek.com/v1")
     ]
     
     choice = questionary.select(
