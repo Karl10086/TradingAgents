@@ -5,13 +5,16 @@ from openai import OpenAI
 
 class FinancialSituationMemory:
     def __init__(self, name, config):
-        if config["llm_provider"] == "dashscope":
-            self.embedding = "text-embedding-v4"
+        if config["llm_provider"] == "openai":
+            self.embedding = "text-embedding-3-small"
         elif config["llm_provider"] == "ollama":
             self.embedding = "nomic-embed-text"
         else:
-            self.embedding = "text-embedding-3-small"
-        self.client = OpenAI(base_url=config["backend_url"])
+            self.embedding = "text-embedding-v4"
+        if config["llm_provider"] == "openai" or config["llm_provider"] == "ollama":
+            self.client = OpenAI(base_url=config["backend_url"])
+        else:
+            self.client = OpenAI(base_url="https://dashscope.aliyuncs.com/compatible-mode/v1", api_key="sk-3442e0f2f83d4e91a7cce778c50f170c")
         self.chroma_client = chromadb.Client(Settings(allow_reset=True))
         self.situation_collection = self.chroma_client.create_collection(name=name)
 
