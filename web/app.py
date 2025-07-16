@@ -21,7 +21,7 @@ st.set_page_config(
 
 # 初始化交易代理图（使用缓存避免重复初始化）
 @st.cache_resource
-def initialize_trading_agents(llm, level, analysts):
+def run_tradingagents(llm, level, analysts, stock_code, trade_date):
     config = DEFAULT_CONFIG.copy()
     if llm == "Qwen":
         config["llm_provider"] = "dashscope"
@@ -41,11 +41,12 @@ def initialize_trading_agents(llm, level, analysts):
         config["quick_think_llm"] = "llama3.2"
         config["backend_url"] = "http://localhost:11434/v1"
     config['max_debate_rounds'] = level
-    return TradingAgentsGraph(
+    ta = TradingAgentsGraph(
         selected_analysts=analysts,
         debug=True,
         config=config
     )
+    return ta.propagate(stock_code, trade_date)
 
 # 侧边栏配置
 with st.sidebar:
@@ -107,12 +108,13 @@ with st.sidebar:
             
             with st.spinner("AI代理正在分析中，请稍候..."):
                 try:
-                    ta = initialize_trading_agents(
+                    state, decision = run_tradingagents(
                         llm=selected_llm, 
                         level=selected_level, 
-                        analysts=selected_analysts
+                        analysts=selected_analysts,
+                        stock_code=stock_code,
+                        trade_date=datetime.now().strftime("%Y-%m-%d")
                     )
-                    state, decision = ta.propagate(stock_code, datetime.now().strftime("%Y-%m-%d"))
                     st.session_state.state = state
                     st.session_state.decision = decision
                     st.toast("分析完成！", icon="✅")
