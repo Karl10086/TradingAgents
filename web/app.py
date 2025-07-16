@@ -3,7 +3,6 @@ from tradingagents.graph.trading_graph import TradingAgentsGraph
 from tradingagents.default_config import DEFAULT_CONFIG
 from datetime import datetime
 import os
-import time
 
 # 初始化会话状态
 if "state" not in st.session_state:
@@ -35,10 +34,10 @@ def run_tradingagents(llm, level, analysts, stock_code, trade_date):
         config["quick_think_llm"] = "deepseek-reasoner"
         config["backend_url"] = "https://api.deepseek.com/v1"
         os.environ["OPENAI_API_KEY"] = "sk-dd4681022dfe44fa8683fd716a11c961"
-    elif llm == "Llama":
+    elif llm == "Gemma3":
         config["llm_provider"] = "ollama"
-        config["deep_think_llm"] = "llama3.1"
-        config["quick_think_llm"] = "llama3.2"
+        config["deep_think_llm"] = "gemma3:1b"
+        config["quick_think_llm"] = "gemma3:1b"
         config["backend_url"] = "http://localhost:11434/v1"
     config['max_debate_rounds'] = level
     ta = TradingAgentsGraph(
@@ -80,7 +79,7 @@ with st.sidebar:
     selected_analysts = [analyst_mapping[cn] for cn in selected_analysts_cn]
 
     # 选择分析模型
-    selected_llm = st.selectbox("**选择AI分析模型:**", options=["Qwen", "DeepSeek", "Llama"], index=1)
+    selected_llm = st.selectbox("**选择AI分析模型:**", options=["Qwen", "DeepSeek", "Gemma3"], index=1)
 
     # 选择分析等级
     level_mapping = {
