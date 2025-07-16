@@ -18,9 +18,7 @@ ta = TradingAgentsGraph(
 
 # forward propagate
 _, decision = ta.propagate("601318.SS", datetime.now().strftime("%Y-%m-%d"))
-print(f"推荐动作: {decision['action']}")
-print(f"置信度: {decision['confidence']:.2f}")
-print(f"推理: {decision['reasoning']}")
+print(decision)
 
 # Memorize mistakes and reflect
 # ta.reflect_and_remember(1000) # parameter is the position returns
