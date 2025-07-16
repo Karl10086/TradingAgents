@@ -4,6 +4,12 @@ from tradingagents.default_config import DEFAULT_CONFIG
 from datetime import datetime
 import os
 
+# 初始化会话状态
+if "state" not in st.session_state:
+    st.session_state.state = {}
+if "decision" not in st.session_state:
+    st.session_state.decision = None
+
 # 设置页面配置
 st.set_page_config(
     page_title="StockAgent",
@@ -35,7 +41,8 @@ def initialize_trading_agents(llm, level, analysts):
 
 # 侧边栏配置
 with st.sidebar:
-    st.header("⚙️ 配置参数")
+    st.title("StockAgent")
+    st.divider()
 
     # 股票代码输入
     stock_code = st.text_input("输入股票代码:", "601318.SS")
@@ -48,10 +55,10 @@ with st.sidebar:
     
     # 选择分析师类型
     analyst_mapping = {
-        "📈市场分析师": "market",
-        "💬情绪分析师": "social",
-        "📰新闻分析师": "news",
-        "💰基本面分析师": "fundamentals"
+        "📈 市场分析师": "market",
+        "💬 情绪分析师": "social",
+        "📰 新闻分析师": "news",
+        "💰 基本面分析师": "fundamentals"
     }
     analyst_options = list(analyst_mapping.keys())
     selected_analysts_cn = st.multiselect(
@@ -89,7 +96,33 @@ with st.sidebar:
                     level=selected_level, 
                     analysts=selected_analysts
                 )
-                _, decision = ta.propagate(stock_code, datetime.now().strftime("%Y-%m-%d"))
-                st.write(decision)
+                state, decision = ta.propagate(stock_code, datetime.now().strftime("%Y-%m-%d"))
+                st.session_state.state = state
+                st.session_state.decision = decision
             except Exception as e:
                 st.error(e)
+
+# 内容配置
+market_report_tab, sentiment_report_tab, news_report_tab, fundamentals_report_tab, investment_plan_tab, final_trade_decision_tab = st.tabs(["📈 市场分析报告", "💬 情绪分析报告", "📰 新闻分析报告", "💰 基本面分析报告", "💰 投资计划", "💰 最终交易决定"])
+
+with market_report_tab:
+    st.write(st.session_state.state.get("market_report", ""))
+
+with sentiment_report_tab:
+    st.write(st.session_state.state.get("sentiment_report", ""))
+
+with news_report_tab:
+    st.write(st.session_state.state.get("news_report", ""))
+
+with fundamentals_report_tab:
+    st.write(st.session_state.state.get("fundamentals_report", ""))
+
+with investment_plan_tab:
+    st.write(st.session_state.state.get("investment_plan", ""))
+
+with final_trade_decision_tab:
+    st.write(st.session_state.state.get("final_trade_decision", ""))
+
+# 页脚
+st.divider()
+st.caption("StockAgent System v1.0 | Powered by StockAgent team")
