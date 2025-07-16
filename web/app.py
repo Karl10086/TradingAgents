@@ -9,7 +9,7 @@ import time
 if "state" not in st.session_state:
     st.session_state.state = {}
 if "decision" not in st.session_state:
-    st.session_state.decision = None
+    st.session_state.decision = {}
 
 # 设置页面配置
 st.set_page_config(
@@ -38,6 +38,7 @@ def initialize_trading_agents(llm, level, analysts):
     config['max_debate_rounds'] = level
     return TradingAgentsGraph(
         selected_analysts=analysts,
+        debug=True,
         config=config
     )
 
@@ -78,19 +79,17 @@ with st.sidebar:
     # 选择分析等级
     level_mapping = {
         "⚡ 浅层分析": 1,
-        "🔍 中等分析": 2,
-        "🧠 深度分析": 3
+        "🔍 中等分析": 3,
+        "🧠 深度分析": 5
     }
     selected_level_cn = st.selectbox("**选择分析等级:**", options=list(level_mapping.keys()), index=1)
     selected_level = level_mapping[selected_level_cn]
-
     with st.expander("分析等级说明", expanded=False):
         st.markdown("""
         - **浅层分析**: 快速研究 (约1-2分钟)
         - **中等分析**: 折中方案 (约3-5分钟)
         - **深度分析**: 全面研究 (约5-8分钟)
         """)
-    
     st.divider()
     
     # 运行分析
@@ -125,7 +124,7 @@ market_report_tab, sentiment_report_tab, news_report_tab, fundamentals_report_ta
     "💬 情绪分析报告", 
     "📰 新闻分析报告", 
     "💰 基本面分析报告", 
-    "📝 投资计划", 
+    "📝 投资策略建议", 
     "✅ 最终交易决定"
 ])
 
@@ -140,15 +139,6 @@ with sentiment_report_tab:
     if "sentiment_report" in st.session_state.state:
         st.subheader("市场情绪分析")
         st.markdown(st.session_state.state["sentiment_report"])
-        
-        # 添加情绪可视化
-        if "sentiment_score" in st.session_state.state:
-            score = st.session_state.state["sentiment_score"]
-            col1, col2 = st.columns([1, 3])
-            with col1:
-                st.metric("情绪综合评分", f"{score}/10", delta=f"{score - 5}" if score > 5 else None)
-            with col2:
-                st.progress(score/10, text="市场情绪指数")
     else:
         st.info("请运行分析以获取情绪分析报告")
         
@@ -156,15 +146,6 @@ with news_report_tab:
     if "news_report" in st.session_state.state:
         st.subheader("近期新闻分析")
         st.markdown(st.session_state.state["news_report"])
-        
-        # 添加新闻摘要
-        if "key_news" in st.session_state.state:
-            st.subheader("重要新闻摘要")
-            for i, news in enumerate(st.session_state.state["key_news"][:5], 1):
-                with st.container(border=True):
-                    st.markdown(f"**{i}. {news['title']}**")
-                    st.caption(f"来源: {news['source']} | 时间: {news['date']}")
-                    st.write(news["summary"])
     else:
         st.info("请运行分析以获取新闻分析报告")
         
@@ -172,16 +153,6 @@ with fundamentals_report_tab:
     if "fundamentals_report" in st.session_state.state:
         st.subheader("基本面分析")
         st.markdown(st.session_state.state["fundamentals_report"])
-        
-        # 添加财务指标
-        if "financial_metrics" in st.session_state.state:
-            metrics = st.session_state.state["financial_metrics"]
-            st.subheader("关键财务指标")
-            cols = st.columns(4)
-            cols[0].metric("市盈率(PE)", metrics.get("pe_ratio", "N/A"))
-            cols[1].metric("市净率(PB)", metrics.get("pb_ratio", "N/A"))
-            cols[2].metric("股息率", f"{metrics.get('dividend_yield', 'N/A')}%")
-            cols[3].metric("ROE", f"{metrics.get('roe', 'N/A')}%")
     else:
         st.info("请运行分析以获取基本面分析报告")
         
@@ -189,51 +160,14 @@ with investment_plan_tab:
     if "investment_plan" in st.session_state.state:
         st.subheader("投资策略建议")
         st.markdown(st.session_state.state["investment_plan"])
-        
-        # 添加风险分析
-        if "risk_analysis" in st.session_state.state:
-            with st.expander("风险分析", expanded=True):
-                st.markdown(st.session_state.state["risk_analysis"])
-                
-        # 添加时间规划
-        if "time_horizon" in st.session_state.state:
-            horizon = st.session_state.state["time_horizon"]
-            st.metric("建议投资周期", horizon)
     else:
         st.info("请运行分析以获取投资计划")
         
 with final_trade_decision_tab:
     if "final_trade_decision" in st.session_state.state:
-        decision = st.session_state.state["final_trade_decision"]
-        
-        # 根据决策类型显示不同的UI
-        col1, col2 = st.columns([1, 3])
-        with col1:
-            if "买入" in decision or "强烈推荐" in decision:
-                st.success("### 🟢 买入建议")
-                st.image("https://cdn-icons-png.flaticon.com/512/3524/3524380.png", width=100)
-            elif "卖出" in decision or "减持" in decision:
-                st.error("### 🔴 卖出建议")
-                st.image("https://cdn-icons-png.flaticon.com/512/3524/3524425.png", width=100)
-            elif "持有" in decision or "观望" in decision:
-                st.warning("### 🟡 持有建议")
-                st.image("https://cdn-icons-png.flaticon.com/512/3524/3524338.png", width=100)
-            else:
-                st.info("### 交易决策")
-        
-        with col2:
-            st.markdown(decision)
-            
-            # 添加置信度指示器
-            if "confidence_level" in st.session_state.state:
-                confidence = st.session_state.state["confidence_level"]
-                st.metric("决策置信度", f"{confidence}%")
-                st.progress(confidence/100, text="分析置信度")
-        
-        # 添加决策摘要
-        if "decision_summary" in st.session_state.state:
-            with st.expander("决策依据摘要", expanded=True):
-                st.markdown(st.session_state.state["decision_summary"])
+        st.subheader("最终交易决定")
+        st.markdown(st.session_state.state["final_trade_decision"])
+        st.markdown(st.session_state.decision)
     else:
         st.info("请运行分析以获取最终交易决定")
 
