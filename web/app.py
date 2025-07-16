@@ -10,8 +10,6 @@ if "state" not in st.session_state:
     st.session_state.state = {}
 if "decision" not in st.session_state:
     st.session_state.decision = None
-if "analysis_started" not in st.session_state:
-    st.session_state.analysis_started = False
 
 # 设置页面配置
 st.set_page_config(
@@ -100,7 +98,6 @@ with st.sidebar:
         if not selected_analysts:
             st.error("请至少选择一种分析师类型！")
         else:
-            st.session_state.analysis_started = True
             st.session_state.state = {}
             st.session_state.decision = None
             
@@ -114,36 +111,13 @@ with st.sidebar:
                     state, decision = ta.propagate(stock_code, datetime.now().strftime("%Y-%m-%d"))
                     st.session_state.state = state
                     st.session_state.decision = decision
-                    st.session_state.analysis_started = False
                     st.toast("分析完成！", icon="✅")
                 except Exception as e:
                     st.error(f"分析失败: {str(e)}")
-                    st.session_state.analysis_started = False
 
 # 主内容区域
 st.title("📊 StockAgent - 智能股票分析系统")
 st.caption("使用多代理AI系统进行全面的股票市场分析")
-
-# 显示分析状态
-if st.session_state.analysis_started:
-    with st.container(border=True):
-        st.header("分析进行中...")
-        progress_bar = st.progress(0, text="初始化AI代理")
-        status_text = st.empty()
-        
-        # 模拟进度
-        stages = [
-            ("收集市场数据", 20),
-            ("分析技术指标", 40),
-            ("评估市场情绪", 60),
-            ("研究公司基本面", 80),
-            ("生成投资建议", 100)
-        ]
-        
-        for stage, progress in stages:
-            time.sleep(1.5)  # 模拟处理时间
-            status_text.text(f"当前阶段: {stage}")
-            progress_bar.progress(progress, text=stage)
 
 # 创建标签页
 market_report_tab, sentiment_report_tab, news_report_tab, fundamentals_report_tab, investment_plan_tab, final_trade_decision_tab = st.tabs([
