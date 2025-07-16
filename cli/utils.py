@@ -222,7 +222,7 @@ def select_deep_thinking_agent(provider) -> str:
         ],
         "ollama": [
             ("llama3.1 local", "llama3.1"),
-            ("qwen3", "qwen3"),
+            ("llama3.2 local", "llama3.2"),
         ],
         "dashscope": [
             ("通义千问-Turbo", "qwen-turbo"),
