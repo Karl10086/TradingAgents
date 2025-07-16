@@ -19,7 +19,7 @@ st.set_page_config(
     page_icon="📊"
 )
 
-# 初始化交易代理图（使用缓存避免重复初始化）
+# 运行tradingagents（使用缓存避免重复初始化）
 @st.cache_resource
 def run_tradingagents(llm, level, analysts, stock_code, trade_date):
     config = DEFAULT_CONFIG.copy()
