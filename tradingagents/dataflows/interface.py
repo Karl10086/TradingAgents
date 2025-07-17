@@ -741,7 +741,7 @@ def get_stock_news_openai(ticker, curr_date):
 def get_stock_news(ticker, curr_date):
     info = ak.stock_individual_info_em(symbol=ticker.rsplit(".", 1)[0])
     news = ak.stock_news_em(symbol=info[info['item'] == '股票简称']['value'].iloc[0])
-    results = f"## Stock news for {ticker.upper()}\n"
+    results = f"## {ticker.upper()}个股新闻\n"
     for _, row in news.iterrows():
         results += f"- **{row['发布时间']}:** {row['新闻内容']}\n"
     return results
@@ -784,7 +784,7 @@ def get_global_news_openai(curr_date):
 
 def get_global_news(curr_date):
     news = ak.stock_info_global_em()
-    results = f"## Global News\n"
+    results = f"## 全球财经快讯\n"
     for _, row in news.iterrows():
         results += f"- **{row['发布时间']}:** {row['摘要']}\n"
     return results
@@ -827,7 +827,7 @@ def get_fundamentals_openai(ticker, curr_date):
 
 def get_stock_fundamentals(ticker, curr_date):
     info = yf.Ticker(ticker.upper()).info
-    results = f"## 公司({ticker.upper()})基本面信息\n"
+    results = f"## {ticker.upper()}公司基本面信息\n"
     results += f"- **净利润率:** {info["profitMargins"]}\n"
     results += f"- **毛利率:** {info["grossMargins"]}\n"
     results += f"- **净资产收益率:** {info["returnOnEquity"]}\n"
