@@ -18,9 +18,9 @@ st.set_page_config(
     page_icon="📊"
 )
 
-# 运行tradingagents（使用缓存避免重复初始化）
+# 初始化tradingagents（使用缓存避免重复初始化）
 @st.cache_resource
-def run_tradingagents(llm, level, analysts, stock_code, trade_date):
+def init_tradingagents(llm, level, analysts):
     config = DEFAULT_CONFIG.copy()
     if llm == "Qwen":
         config["llm_provider"] = "dashscope"
@@ -35,12 +35,34 @@ def run_tradingagents(llm, level, analysts, stock_code, trade_date):
         config["backend_url"] = "https://api.deepseek.com/v1"
         os.environ["OPENAI_API_KEY"] = "sk-dd4681022dfe44fa8683fd716a11c961"
     config['max_debate_rounds'] = level
-    ta = TradingAgentsGraph(
+    return TradingAgentsGraph(
         selected_analysts=analysts,
-        debug=True,
         config=config
     )
-    return ta.propagate(stock_code, trade_date)
+
+# 运行tradingagents（使用缓存避免重复初始化）
+@st.cache_resource
+def run_tradingagents(llm, level, analysts, stock_code, trade_date):
+    ta = init_tradingagents(
+        llm=llm,
+        level=level,
+        analysts=analysts
+    )
+    ta.ticker = stock_code
+    init_agent_state = ta.propagator.create_initial_state(
+        stock_code, trade_date
+    )
+    args = ta.propagator.get_graph_args()
+    trace = []
+    for chunk in ta.graph.stream(init_agent_state, **args):
+        if len(chunk["messages"]) == 0:
+            pass
+        else:
+            st.write(chunk["messages"][-1])
+            trace.append(chunk)
+    final_state = trace[-1]
+    ta.curr_state = final_state
+    return final_state, ta.process_signal(final_state["final_trade_decision"])
 
 # 侧边栏配置
 with st.sidebar:
@@ -100,7 +122,7 @@ with st.sidebar:
             st.session_state.state = {}
             st.session_state.decision = None
             
-            with st.spinner("AI代理正在分析中，请稍候..."):
+            with st.status("AI代理正在分析中，请稍候..."):
                 try:
                     state, decision = run_tradingagents(
                         llm=selected_llm, 
