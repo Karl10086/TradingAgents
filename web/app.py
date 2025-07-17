@@ -120,16 +120,19 @@ with st.sidebar:
     st.divider()
     
     # 运行分析
-    if st.button(
+    def on_click():
+        st.session_state.analysis_in_progress = True
+    st.button(
         "🚀 运行分析",
+        on_click=on_click,
         type="primary",
         use_container_width=True,
         disabled=st.session_state.analysis_in_progress
-    ):
+    )
+    if st.session_state.analysis_in_progress:
         if not selected_analysts:
             st.error("请至少选择一种分析师类型！")
         else:
-            st.session_state.analysis_in_progress = True
             st.session_state.state = {}
             st.session_state.decision = None
             
@@ -146,9 +149,8 @@ with st.sidebar:
                 st.toast("分析完成！", icon="✅")
             except Exception as e:
                 st.error(f"分析失败: {str(e)}")
-
-            st.session_state.analysis_in_progress = False
-
+        st.session_state.analysis_in_progress = False
+        
 # 主内容区域
 st.title("📊 StockAgent - 智能股票分析系统")
 st.caption("使用多代理AI系统进行全面的股票市场分析")
