@@ -55,7 +55,7 @@ def run_tradingagents(llm, level, analysts, stock_code, trade_date):
     )
     args = ta.propagator.get_graph_args()
     trace = []
-    with st.status("AI代理正在分析中，请稍候...") as status:
+    with st.status("AI代理正在分析中，请稍候...", expanded=True) as status:
         with st.container(
             height=300, 
             border=False
@@ -64,7 +64,7 @@ def run_tradingagents(llm, level, analysts, stock_code, trade_date):
                 if len(chunk["messages"]) != 0:
                     trace.append(chunk)
                     st.text(chunk["messages"][-1])
-    status.update(label="AI代理已完成分析")
+        status.update(label="AI代理已完成分析", expanded=False)
     final_state = trace[-1]
     ta.curr_state = final_state
     return final_state, ta.process_signal(final_state["final_trade_decision"])
@@ -164,6 +164,7 @@ with st.sidebar:
             except Exception as e:
                 st.error(f"分析失败: {str(e)}")
         st.session_state.analysis_in_progress = False
+        st.rerun()
         
 # 主内容区域
 st.title("📊 StockAgent - 智能股票分析系统")
