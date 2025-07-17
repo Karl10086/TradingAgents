@@ -108,7 +108,7 @@ with st.sidebar:
     selected_llm = st.selectbox(
         "**选择AI分析模型:**", 
         options=["Qwen", "DeepSeek"], 
-        index=1,
+        index=0,
         disabled=st.session_state.analysis_in_progress
     )
 
@@ -121,7 +121,7 @@ with st.sidebar:
     selected_level_cn = st.selectbox(
         "**选择分析等级:**", 
         options=list(level_mapping.keys()), 
-        index=1,
+        index=0,
         disabled=st.session_state.analysis_in_progress
     )
     selected_level = level_mapping[selected_level_cn]
