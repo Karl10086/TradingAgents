@@ -100,7 +100,7 @@ with st.sidebar:
         "**选择分析师类型:**",
         options=analyst_options,
         default=analyst_options,
-        placeholder="请选择至少一个分析师"
+        disabled=st.session_state.analysis_in_progress
     )
     selected_analysts = [analyst_mapping[cn] for cn in selected_analysts_cn]
 
