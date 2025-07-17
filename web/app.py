@@ -25,7 +25,7 @@ def run_tradingagents(llm, level, analysts, stock_code, trade_date):
     if llm == "Qwen":
         config["llm_provider"] = "dashscope"
         config["deep_think_llm"] = "qwen-turbo"
-        config["quick_think_llm"] = "qwen-plus"
+        config["quick_think_llm"] = "qwen-turbo"
         config["backend_url"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
         os.environ["OPENAI_API_KEY"] = "sk-3442e0f2f83d4e91a7cce778c50f170c"
     elif llm == "DeepSeek":
@@ -34,11 +34,6 @@ def run_tradingagents(llm, level, analysts, stock_code, trade_date):
         config["quick_think_llm"] = "deepseek-reasoner"
         config["backend_url"] = "https://api.deepseek.com/v1"
         os.environ["OPENAI_API_KEY"] = "sk-dd4681022dfe44fa8683fd716a11c961"
-    elif llm == "Ollama":
-        config["llm_provider"] = "ollama"
-        config["deep_think_llm"] = "qwen2.5:0.5b"
-        config["quick_think_llm"] = "qwen3:0.6b"
-        config["backend_url"] = "http://localhost:11434/v1"
     config['max_debate_rounds'] = level
     ta = TradingAgentsGraph(
         selected_analysts=analysts,
@@ -79,7 +74,7 @@ with st.sidebar:
     selected_analysts = [analyst_mapping[cn] for cn in selected_analysts_cn]
 
     # 选择分析模型
-    selected_llm = st.selectbox("**选择AI分析模型:**", options=["Qwen", "DeepSeek", "Ollama"], index=1)
+    selected_llm = st.selectbox("**选择AI分析模型:**", options=["Qwen", "DeepSeek"], index=1)
 
     # 选择分析等级
     level_mapping = {
@@ -125,57 +120,43 @@ st.title("📊 StockAgent - 智能股票分析系统")
 st.caption("使用多代理AI系统进行全面的股票市场分析")
 
 # 创建标签页
-market_report_tab, sentiment_report_tab, news_report_tab, fundamentals_report_tab, investment_plan_tab, final_trade_decision_tab = st.tabs([
+market_report_tab, sentiment_report_tab, news_report_tab, fundamentals_report_tab, investment_plan_tab = st.tabs([
     "📈 市场分析报告", 
     "💬 情绪分析报告", 
     "📰 新闻分析报告", 
     "💰 基本面分析报告", 
-    "📝 投资策略建议", 
-    "✅ 最终交易决定"
+    "📝 投资计划", 
 ])
 
 with market_report_tab:
     if "market_report" in st.session_state.state:
-        st.subheader("市场趋势分析")
         st.markdown(st.session_state.state["market_report"])
     else:
         st.info("请运行分析以获取市场分析报告")
         
 with sentiment_report_tab:
     if "sentiment_report" in st.session_state.state:
-        st.subheader("市场情绪分析")
         st.markdown(st.session_state.state["sentiment_report"])
     else:
         st.info("请运行分析以获取情绪分析报告")
         
 with news_report_tab:
     if "news_report" in st.session_state.state:
-        st.subheader("近期新闻分析")
         st.markdown(st.session_state.state["news_report"])
     else:
         st.info("请运行分析以获取新闻分析报告")
         
 with fundamentals_report_tab:
     if "fundamentals_report" in st.session_state.state:
-        st.subheader("基本面分析")
         st.markdown(st.session_state.state["fundamentals_report"])
     else:
         st.info("请运行分析以获取基本面分析报告")
         
 with investment_plan_tab:
     if "investment_plan" in st.session_state.state:
-        st.subheader("投资策略建议")
         st.markdown(st.session_state.state["investment_plan"])
     else:
         st.info("请运行分析以获取投资计划")
-        
-with final_trade_decision_tab:
-    if "final_trade_decision" in st.session_state.state:
-        st.subheader("最终交易决定")
-        st.markdown(st.session_state.state["final_trade_decision"])
-        st.markdown(st.session_state.decision)
-    else:
-        st.info("请运行分析以获取最终交易决定")
 
 # 页脚
 st.divider()

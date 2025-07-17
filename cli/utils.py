@@ -150,8 +150,8 @@ def select_shallow_thinking_agent(provider) -> str:
             ("google/gemini-2.0-flash-exp:free - Gemini Flash 2.0 offers a significantly faster time to first token", "google/gemini-2.0-flash-exp:free"),
         ],
         "ollama": [
-            ("Qwen2.5", "qwen2.5:0.5b"),
-            ("Qwen3", "qwen3:0.6b"),
+            ("Llama3", "llama3.2:1b"),
+            ("Qwen3", "qwen3:1.7b"),
         ],
         "dashscope": [
             ("通义千问-Turbo", "qwen-turbo"),
@@ -221,8 +221,8 @@ def select_deep_thinking_agent(provider) -> str:
             ("Deepseek - latest iteration of the flagship chat model family from the DeepSeek team.", "deepseek/deepseek-chat-v3-0324:free"),
         ],
         "ollama": [
-            ("Qwen2.5", "qwen2.5:0.5b"),
-            ("Qwen3", "qwen3:0.6b"),
+            ("Llama3", "llama3.2:1b"),
+            ("Qwen3", "qwen3:1.7b"),
         ],
         "dashscope": [
             ("通义千问-Turbo", "qwen-turbo"),
