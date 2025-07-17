@@ -5,6 +5,8 @@ from datetime import datetime
 import os
 
 # 初始化会话状态
+if 'analysis_in_progress' not in st.session_state:
+    st.session_state.analysis_in_progress = False
 if "state" not in st.session_state:
     st.session_state.state = {}
 if "decision" not in st.session_state:
@@ -117,10 +119,16 @@ with st.sidebar:
     st.divider()
     
     # 运行分析
-    if st.button("🚀 运行分析", type="primary", use_container_width=True):
+    if st.button(
+        "🚀 运行分析",
+        type="primary",
+        use_container_width=True,
+        disabled=st.session_state.analysis_in_progress
+    ):
         if not selected_analysts:
             st.error("请至少选择一种分析师类型！")
         else:
+            st.session_state.analysis_in_progress = True
             st.session_state.state = {}
             st.session_state.decision = None
             
@@ -137,6 +145,8 @@ with st.sidebar:
                 st.toast("分析完成！", icon="✅")
             except Exception as e:
                 st.error(f"分析失败: {str(e)}")
+            finally:
+                st.session_state.analysis_in_progress = False
 
 # 主内容区域
 st.title("📊 StockAgent - 智能股票分析系统")
