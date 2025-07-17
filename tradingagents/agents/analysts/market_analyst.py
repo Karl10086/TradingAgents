@@ -13,7 +13,6 @@ def create_market_analyst(llm, toolkit):
         if toolkit.config["online_tools"]:
             tools = [
                 toolkit.get_YFin_data_online,
-                toolkit.get_stockstats_indicators_report_online,
             ]
         else:
             tools = [
