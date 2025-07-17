@@ -54,10 +54,14 @@ def run_tradingagents(llm, level, analysts, stock_code, trade_date):
     args = ta.propagator.get_graph_args()
     trace = []
     with st.status("AI代理正在分析中，请稍候..."):
-        for chunk in ta.graph.stream(init_agent_state, **args):
-            if len(chunk["messages"]) != 0:
-                trace.append(chunk)
-                st.write(chunk["messages"])
+        with st.container(
+            height=300, 
+            border=False
+        ):
+            for chunk in ta.graph.stream(init_agent_state, **args):
+                if len(chunk["messages"]) != 0:
+                    trace.append(chunk)
+                    st.text(chunk["messages"][-1])
     final_state = trace[-1]
     ta.curr_state = final_state
     return final_state, ta.process_signal(final_state["final_trade_decision"])
