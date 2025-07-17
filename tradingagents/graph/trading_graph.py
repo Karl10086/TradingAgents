@@ -116,7 +116,7 @@ class TradingAgentsGraph:
                 [
                     # online tools
                     self.toolkit.get_YFin_data_online,
-                    # self.toolkit.get_stockstats_indicators_report_online,
+                    self.toolkit.get_stockstats_indicators_report_online,
                     # offline tools
                     self.toolkit.get_YFin_data,
                     self.toolkit.get_stockstats_indicators_report,
