@@ -55,7 +55,7 @@ def run_tradingagents(llm, level, analysts, stock_code, trade_date):
     )
     args = ta.propagator.get_graph_args()
     trace = []
-    with st.status("AI代理正在分析中，请稍候..."):
+    with st.status("AI代理正在分析中，请稍候...") as status:
         with st.container(
             height=300, 
             border=False
@@ -64,6 +64,7 @@ def run_tradingagents(llm, level, analysts, stock_code, trade_date):
                 if len(chunk["messages"]) != 0:
                     trace.append(chunk)
                     st.text(chunk["messages"][-1])
+    status.update(label="AI代理已完成分析")
     final_state = trace[-1]
     ta.curr_state = final_state
     return final_state, ta.process_signal(final_state["final_trade_decision"])
@@ -145,20 +146,20 @@ with st.sidebar:
                 st.toast("分析完成！", icon="✅")
             except Exception as e:
                 st.error(f"分析失败: {str(e)}")
-            finally:
-                st.session_state.analysis_in_progress = False
+
+            st.session_state.analysis_in_progress = False
 
 # 主内容区域
 st.title("📊 StockAgent - 智能股票分析系统")
 st.caption("使用多代理AI系统进行全面的股票市场分析")
 
 # 创建标签页
-market_report_tab, sentiment_report_tab, news_report_tab, fundamentals_report_tab, investment_plan_tab = st.tabs([
+market_report_tab, sentiment_report_tab, news_report_tab, fundamentals_report_tab, final_trade_decision_tab = st.tabs([
     "📈 市场分析报告", 
     "💬 情绪分析报告", 
     "📰 新闻分析报告", 
     "💰 基本面分析报告", 
-    "📝 投资计划", 
+    "✅ 最终交易决定"
 ])
 
 with market_report_tab:
@@ -185,11 +186,11 @@ with fundamentals_report_tab:
     else:
         st.info("请运行分析以获取基本面分析报告")
         
-with investment_plan_tab:
-    if "investment_plan" in st.session_state.state:
-        st.markdown(st.session_state.state["investment_plan"])
+with final_trade_decision_tab:
+    if "final_trade_decision" in st.session_state.state:
+        st.markdown(st.session_state.state["final_trade_decision"])
     else:
-        st.info("请运行分析以获取投资计划")
+        st.info("请运行分析以获取最终交易决定")
 
 # 页脚
 st.divider()
