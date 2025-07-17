@@ -75,7 +75,11 @@ with st.sidebar:
     st.divider()
 
     # 股票代码输入
-    stock_code = st.text_input("**输入股票代码:**", "601318.SS")
+    stock_code = st.text_input(
+        "**输入股票代码:**", 
+        value="601318.SS",
+        disabled=st.session_state.analysis_in_progress
+    )
     with st.expander("股票代码说明", expanded=False):
         st.markdown("""
         - **深交所**: .SZ (如: 000001.SZ)
@@ -101,7 +105,12 @@ with st.sidebar:
     selected_analysts = [analyst_mapping[cn] for cn in selected_analysts_cn]
 
     # 选择分析模型
-    selected_llm = st.selectbox("**选择AI分析模型:**", options=["Qwen", "DeepSeek"], index=1)
+    selected_llm = st.selectbox(
+        "**选择AI分析模型:**", 
+        options=["Qwen", "DeepSeek"], 
+        index=1,
+        disabled=st.session_state.analysis_in_progress
+    )
 
     # 选择分析等级
     level_mapping = {
@@ -109,7 +118,12 @@ with st.sidebar:
         "🔍 中等分析": 3,
         "🧠 深度分析": 5
     }
-    selected_level_cn = st.selectbox("**选择分析等级:**", options=list(level_mapping.keys()), index=1)
+    selected_level_cn = st.selectbox(
+        "**选择分析等级:**", 
+        options=list(level_mapping.keys()), 
+        index=1,
+        disabled=st.session_state.analysis_in_progress
+    )
     selected_level = level_mapping[selected_level_cn]
     with st.expander("分析等级说明", expanded=False):
         st.markdown("""
