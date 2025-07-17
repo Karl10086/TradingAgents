@@ -25,7 +25,7 @@ def init_tradingagents(llm, level, analysts):
     if llm == "Qwen":
         config["llm_provider"] = "dashscope"
         config["deep_think_llm"] = "qwen-turbo"
-        config["quick_think_llm"] = "qwen-turbo"
+        config["quick_think_llm"] = "qwen-plus"
         config["backend_url"] = "https://dashscope.aliyuncs.com/compatible-mode/v1"
         os.environ["OPENAI_API_KEY"] = "sk-3442e0f2f83d4e91a7cce778c50f170c"
     elif llm == "DeepSeek":
@@ -40,8 +40,6 @@ def init_tradingagents(llm, level, analysts):
         config=config
     )
 
-# 运行tradingagents（使用缓存避免重复初始化）
-@st.cache_resource
 def run_tradingagents(llm, level, analysts, stock_code, trade_date):
     ta = init_tradingagents(
         llm=llm,
@@ -54,12 +52,19 @@ def run_tradingagents(llm, level, analysts, stock_code, trade_date):
     )
     args = ta.propagator.get_graph_args()
     trace = []
-    for chunk in ta.graph.stream(init_agent_state, **args):
-        if len(chunk["messages"]) == 0:
-            pass
-        else:
-            st.write(chunk["messages"][-1])
-            trace.append(chunk)
+
+    bar = st.progress(0, text="AI代理正在分析中，请稍候...")
+    for percent_complete in range(64):
+        for chunk in ta.graph.stream(init_agent_state, **args):
+            if len(chunk["messages"]) != 0:
+                trace.append(chunk)
+                print(chunk["messages"])
+
+            for key, value in chunk.items():
+                if len(value) != 0 and key in ["market_report", "sentiment_report", "news_report", "fundamentals_report"]:
+                    bar.progress(percent_complete+1)
+    bar.empty()
+
     final_state = trace[-1]
     ta.curr_state = final_state
     return final_state, ta.process_signal(final_state["final_trade_decision"])
@@ -122,20 +127,19 @@ with st.sidebar:
             st.session_state.state = {}
             st.session_state.decision = None
             
-            with st.status("AI代理正在分析中，请稍候..."):
-                try:
-                    state, decision = run_tradingagents(
-                        llm=selected_llm, 
-                        level=selected_level, 
-                        analysts=selected_analysts,
-                        stock_code=stock_code,
-                        trade_date=datetime.now().strftime("%Y-%m-%d")
-                    )
-                    st.session_state.state = state
-                    st.session_state.decision = decision
-                    st.toast("分析完成！", icon="✅")
-                except Exception as e:
-                    st.error(f"分析失败: {str(e)}")
+            try:
+                state, decision = run_tradingagents(
+                    llm=selected_llm, 
+                    level=selected_level, 
+                    analysts=selected_analysts,
+                    stock_code=stock_code,
+                    trade_date=datetime.now().strftime("%Y-%m-%d")
+                )
+                st.session_state.state = state
+                st.session_state.decision = decision
+                st.toast("分析完成！", icon="✅")
+            except Exception as e:
+                st.error(f"分析失败: {str(e)}")
 
 # 主内容区域
 st.title("📊 StockAgent - 智能股票分析系统")
