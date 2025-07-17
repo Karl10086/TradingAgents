@@ -40,6 +40,7 @@ def init_tradingagents(llm, level, analysts):
         config=config
     )
 
+# 运行tradingagents（使用缓存避免重复初始化）
 def run_tradingagents(llm, level, analysts, stock_code, trade_date):
     ta = init_tradingagents(
         llm=llm,
@@ -52,19 +53,11 @@ def run_tradingagents(llm, level, analysts, stock_code, trade_date):
     )
     args = ta.propagator.get_graph_args()
     trace = []
-
-    bar = st.progress(0, text="AI代理正在分析中，请稍候...")
-    for percent_complete in range(64):
+    with st.status("AI代理正在分析中，请稍候..."):
         for chunk in ta.graph.stream(init_agent_state, **args):
             if len(chunk["messages"]) != 0:
                 trace.append(chunk)
-                print(chunk["messages"])
-
-            for key, value in chunk.items():
-                if len(value) != 0 and key in ["market_report", "sentiment_report", "news_report", "fundamentals_report"]:
-                    bar.progress(percent_complete+1)
-    bar.empty()
-
+                st.write(chunk["messages"])
     final_state = trace[-1]
     ta.curr_state = final_state
     return final_state, ta.process_signal(final_state["final_trade_decision"])
