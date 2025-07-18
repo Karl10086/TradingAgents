@@ -19,6 +19,7 @@ def create_news_analyst(llm, toolkit):
         system_message = (
             "你是一名新闻研究员，负责分析过去一周的相关新闻和趋势。请撰写一份关于当前世界状态的全面报告，这些信息对交易和宏观经济有参考价值。查看EODHD和finnhub的新闻以获得全面信息。不要简单地说趋势好坏参半，而要提供详细且细粒度的分析和见解，以帮助交易者做出决策。"
             + """ 确保在报告末尾附加一个Makrdown表格以组织报告中的关键点，使其结构清晰、易于阅读。"""
+            + """ 所有响应必须使用简体中文。"""
         )
 
         prompt = ChatPromptTemplate.from_messages(

@@ -59,8 +59,8 @@ def run_tradingagents(llm, level, analysts, stock_code, trade_date):
             "Research Manager": "研究经理",
             "Trader": "交易员",
             "Risky Analyst": "风险分析师",
-            "Neutral Analyst": "中性分析师",
             "Safe Analyst": "保守分析师",
+            "Neutral Analyst": "中性分析师",
             "Portfolio Manager": "投资组合经理"
         }
         teams_status_placeholders = {}
@@ -119,8 +119,8 @@ def run_tradingagents(llm, level, analysts, stock_code, trade_date):
                     if "judge_decision" in risk_state and risk_state["judge_decision"]:
                         # All risk management and portfolio manager teams complete after judge decision
                         teams_status_placeholders["Risky Analyst"].markdown(f"✅ **{team_display_names['Risky Analyst']}:** 已完成")
-                        teams_status_placeholders["Neutral Analyst"].markdown(f"✅ **{team_display_names['Neutral Analyst']}:** 已完成")
                         teams_status_placeholders["Safe Analyst"].markdown(f"✅ **{team_display_names['Safe Analyst']}:** 已完成")
+                        teams_status_placeholders["Neutral Analyst"].markdown(f"✅ **{team_display_names['Neutral Analyst']}:** 已完成")
                         teams_status_placeholders["Portfolio Manager"].markdown(f"✅ **{team_display_names['Portfolio Manager']}:** 已完成")
             trace.append(chunk)
         status.update(label="AI代理已完成分析", expanded=False)

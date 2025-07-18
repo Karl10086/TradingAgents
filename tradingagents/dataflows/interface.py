@@ -661,7 +661,10 @@ def get_YFin_data_online(
     csv_string = data.to_csv()
 
     # Add header information
-    header = f"# {symbol.upper()}行情数据\n"
+    header = f"# Stock data for {symbol.upper()} from {start_date} to {end_date}\n"
+    header += f"# Total records: {len(data)}\n"
+    header += f"# Data retrieved on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+
     return header + csv_string
 
 
@@ -736,6 +739,9 @@ def get_stock_news_openai(ticker, curr_date):
 
 
 def get_stock_news(ticker, curr_date):
+    if ".SS" not in ticker and ".SZ" not in ticker:
+        return ""
+
     info = ak.stock_individual_info_em(symbol=ticker.rsplit(".", 1)[0])
     news = ak.stock_news_em(symbol=info[info['item'] == '股票简称']['value'].iloc[0])
     results = f"## {ticker.upper()}个股新闻\n"
