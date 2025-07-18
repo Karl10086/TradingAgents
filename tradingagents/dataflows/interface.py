@@ -661,10 +661,7 @@ def get_YFin_data_online(
     csv_string = data.to_csv()
 
     # Add header information
-    header = f"# Stock data for {symbol.upper()} from {start_date} to {end_date}\n"
-    header += f"# Total records: {len(data)}\n"
-    header += f"# Data retrieved on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
-
+    header = f"# {symbol.upper()}行情数据\n"
     return header + csv_string
 
 
@@ -827,25 +824,7 @@ def get_fundamentals_openai(ticker, curr_date):
 
 def get_stock_fundamentals(ticker, curr_date):
     info = yf.Ticker(ticker.upper()).info
-    results = f"## {ticker.upper()}公司基本面信息\n"
-    results += f"- **净利润率:** {info["profitMargins"]}\n"
-    results += f"- **毛利率:** {info["grossMargins"]}\n"
-    results += f"- **净资产收益率:** {info["returnOnEquity"]}\n"
-    results += f"- **资产收益率:** {info["returnOnAssets"]}\n"
-    results += f"- **收入增长率:** {info["revenueGrowth"]}\n"
-    results += f"- **收益增长率:** {info["earningsGrowth"]}\n"
-    results += f"- **债务权益比:** {info["debtToEquity"]}\n"
-    results += f"- **流动比率:** {info["currentRatio"]}\n"
-    results += f"- **速动比率:** {info["quickRatio"]}\n"
-    results += f"- **自由现金流:** {info["freeCashflow"]}\n"
-    results += f"- **经营现金流:** {info["operatingCashflow"]}\n"
-    results += f"- **静态市盈率:** {info["trailingPE"]}\n"
-    results += f"- **动态市盈率:** {info["forwardPE"]}\n"
-    results += f"- **市净率:** {info["priceToBook"]}\n"
-    results += f"- **股息率:** {info["dividendYield"]}\n"
-    results += f"- **市值:** {info["marketCap"]}\n"
-    results += f"- **企业价值:** {info["enterpriseValue"]}\n"
-    results += f"- **全职员工数量:** {info["fullTimeEmployees"]}\n"
-    results += f"- **行业:** {info["industry"]}\n"
-    results += f"- **部门:** {info["sector"]}\n"
+    results = f"## {ticker.upper()}基本面信息\n"
+    for key, value in info.items():
+        results += f"- **{key}:** {value}\n"
     return results
