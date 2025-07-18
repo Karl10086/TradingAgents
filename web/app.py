@@ -11,6 +11,8 @@ if "state" not in st.session_state:
     st.session_state.state = {}
 if "decision" not in st.session_state:
     st.session_state.decision = {}
+if "error" not in st.session_state:
+    st.session_state.error = ""
 
 # 设置页面配置
 st.set_page_config(
@@ -202,6 +204,7 @@ with st.sidebar:
     # 运行分析
     def on_click():
         st.session_state.analysis_in_progress = True
+        st.session_state.error = ""
     st.button(
         "🚀 运行分析",
         on_click=on_click,
@@ -211,7 +214,7 @@ with st.sidebar:
     )
     if st.session_state.analysis_in_progress:
         if not selected_analysts:
-            st.error("请至少选择一种分析师类型！")
+            st.session_state.error = "请至少选择一种分析师类型!"
         else:
             st.session_state.state = {}
             st.session_state.decision = None
@@ -226,11 +229,12 @@ with st.sidebar:
                 )
                 st.session_state.state = state
                 st.session_state.decision = decision
-                st.toast("分析完成！", icon="✅")
             except Exception as e:
-                st.error(f"分析失败: {str(e)}")
+                st.session_state.error = str(e)
         st.session_state.analysis_in_progress = False
         st.rerun()
+    if st.session_state.error:
+        st.error(st.session_state.error)
         
 # 主内容区域
 st.title("📊 StockAgent - 智能股票分析系统")
