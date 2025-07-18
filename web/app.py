@@ -56,14 +56,64 @@ def run_tradingagents(llm, level, analysts, stock_code, trade_date):
     args = ta.propagator.get_graph_args()
     trace = []
     with st.status("AI代理正在分析中，请稍候...", expanded=True) as status:
-        with st.container(
-            height=300, 
-            border=False
-        ):
-            for chunk in ta.graph.stream(init_agent_state, **args):
-                if len(chunk["messages"]) != 0:
-                    trace.append(chunk)
-                    st.text(chunk["messages"][-1])
+        teams_status = {}
+        for team in ["Market Analyst", "Social Analyst", "News Analyst", "Fundamentals Analyst", "Bull Researcher", "Bear Researcher", "Research Manager", "Trader", "Risky Analyst", "Neutral Analyst", "Safe Analyst", "Portfolio Manager"]:
+            teams_status[team] = st.empty()
+            teams_status[team].text(f"⚪ **{team}:** pending")
+        teams_status["Market Analyst"].text(f"🟢 **Market Analyst:** progress")
+        for chunk in ta.graph.stream(init_agent_state, **args):
+            if len(chunk["messages"]) > 0:
+                # Analyst Team Reports
+                if "market_report" in chunk and chunk["market_report"]:
+                    teams_status["Market Analyst"].text(f"✅ **Market Analyst:** completed")
+                    if "social" in analysts:
+                        teams_status["Social Analyst"].text(f"🟢 **Social Analyst:** progress")
+                if "sentiment_report" in chunk and chunk["sentiment_report"]:
+                    teams_status["Social Analyst"].text(f"✅ **Social Analyst:** completed")
+                    if "news" in analysts:
+                        teams_status["News Analyst"].text(f"🟢 **Social Analyst:** progress")
+                if "news_report" in chunk and chunk["news_report"]:
+                    teams_status["News Analyst"].text(f"✅ **News Analyst:** completed")
+                    if "fundamentals" in analysts:
+                        teams_status["Fundamentals Analyst"].text(f"🟢 **Fundamentals Analyst:** progress")
+                if "fundamentals_report" in chunk and chunk["fundamentals_report"]:
+                    teams_status["Fundamentals Analyst"].text(f"✅ **Fundamentals Analyst:** completed")
+                    for team in ["Bull Researcher", "Bear Researcher", "Research Manager", "Trader"]:
+                        teams_status[team].text(f"🟢 **{team}:** progress")
+
+                # Research Team - Handle Investment Debate State
+                if (
+                    "investment_debate_state" in chunk
+                    and chunk["investment_debate_state"]
+                ):
+                    debate_state = chunk["investment_debate_state"]
+                    if (
+                        "judge_decision" in debate_state
+                        and debate_state["judge_decision"]
+                    ):
+                        for team in ["Bull Researcher", "Bear Researcher", "Research Manager", "Trader"]:
+                            teams_status[team].text(f"✅ **{team}:** completed")
+                        teams_status["Risky Analyst"].text(f"🟢 **Risky Analyst:** progress")
+
+                # Risk Management Team - Handle Risk Debate State
+                if "risk_debate_state" in chunk and chunk["risk_debate_state"]:
+                    risk_state = chunk["risk_debate_state"]
+                    if (
+                        "current_safe_response" in risk_state
+                        and risk_state["current_safe_response"]
+                    ):
+                        teams_status["Social Analyst"].text(f"🟢 **Safe Analyst:** progress")
+                    if (
+                        "current_neutral_response" in risk_state
+                        and risk_state["current_neutral_response"]
+                    ):
+                        teams_status["Neutral Analyst"].text(f"🟢 **Neutral Analyst:** progress")
+                    if "judge_decision" in risk_state and risk_state["judge_decision"]:
+                        teams_status["Risky Analyst"].text(f"✅ **Risky Analyst:** completed")
+                        teams_status["Neutral Analyst"].text(f"✅ **Neutral Analyst:** completed")
+                        teams_status["Safe Analyst"].text(f"✅ **Safe Analyst:** completed")
+                        teams_status["Portfolio Manager"].text(f"✅ **Portfolio Manager:** completed")
+            trace.append(chunk)
         status.update(label="AI代理已完成分析", expanded=False)
     final_state = trace[-1]
     ta.curr_state = final_state
