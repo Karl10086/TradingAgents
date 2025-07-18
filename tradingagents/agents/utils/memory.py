@@ -16,7 +16,7 @@ class FinancialSituationMemory:
         else:
             self.client = OpenAI(base_url="https://dashscope.aliyuncs.com/compatible-mode/v1", api_key="sk-3442e0f2f83d4e91a7cce778c50f170c")
         self.chroma_client = chromadb.Client(Settings(allow_reset=True))
-        self.situation_collection = self.chroma_client.create_collection(name=name)
+        self.situation_collection = self.chroma_client.get_or_create_collection(name=name)
 
     def get_embedding(self, text):
         """Get OpenAI embedding for a text"""

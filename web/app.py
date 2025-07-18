@@ -22,9 +22,8 @@ st.set_page_config(
     page_icon="📊"
 )
 
-# 初始化tradingagents（使用缓存避免重复初始化）
-@st.cache_resource
-def init_tradingagents(llm, level, analysts):
+# 运行tradingagents
+def run_tradingagents(llm, level, analysts, stock_code, trade_date):
     config = DEFAULT_CONFIG.copy()
     if llm == "Qwen":
         config["llm_provider"] = "dashscope"
@@ -39,17 +38,9 @@ def init_tradingagents(llm, level, analysts):
         config["backend_url"] = "https://api.deepseek.com/v1"
         os.environ["OPENAI_API_KEY"] = "sk-dd4681022dfe44fa8683fd716a11c961"
     config['max_debate_rounds'] = level
-    return TradingAgentsGraph(
+    ta = TradingAgentsGraph(
         selected_analysts=analysts,
         config=config
-    )
-
-# 运行tradingagents（使用缓存避免重复初始化）
-def run_tradingagents(llm, level, analysts, stock_code, trade_date):
-    ta = init_tradingagents(
-        llm=llm,
-        level=level,
-        analysts=analysts
     )
     ta.ticker = stock_code
     init_agent_state = ta.propagator.create_initial_state(
